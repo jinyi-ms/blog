@@ -9,9 +9,8 @@ tags:
 
 こんにちは、Azure テクニカル サポート チームの金です。
 Application Gateway v2 (Standard/WAF) の TLS 終端は、リスナーに直接証明書をアップロードする、またはリスナーにて Key Vault 証明書/シークレットを参照することで実現できます。
-リスナーにて Key Vault 証明書/シークレットを参照する構成では、Applocation Gateway から 4 時間毎に Key Vault に 証明書/シークレットを参照する動作を行います。Applocation Gateway を更新するタイミングでも、Key Vault へ 証明書/シークレットを参照します。
-
-この記事では、リスナーにて Key Vault 証明書/シークレットを参照する構成で、Application Gateway に HTTPS でアクセスした際に、「ERR_SSL_UNRECOGNIZED_NAME_ALERT」といった証明書エラーが発生する、もしくは Application Gateway の停止・起動や変更が正常に完了せず、Application Gateway のプロビジョニング状態が失敗になった場合に、確認すべき設定をご紹介します。リスナーにて Key Vault 証明書/シークレットを参照する設定を行う際にも該当します。
+この記事では、リスナーにて Key Vault 証明書/シークレットを参照する構成で、Application Gateway に HTTPS でアクセスした際に、「ERR_SSL_UNRECOGNIZED_NAME_ALERT」といった証明書エラーが発生した場合に、確認すべき設定をご紹介します。
+リスナーにて Key Vault 証明書/シークレットを参照する設定を行う際にも該当します。
 
 > [!TIP]
 > Application Gateway から Key Vault 証明書/シークレットを取得する際は、マネージド ID を使用しており、Key Vault 側では、ロールベースのアクセス制御、またはアクセス ポリシーで、当該マネージド ID に対して適切なアクセス権限を付与する必要があります。
@@ -51,14 +50,5 @@ Application Gateway からプライベート エンドポイントを介して K
 - AppService 証明書を Key Vault に格納して使用する場合は、AppService 証明書のドメイン検証が終わってから、Application Gateway のリスナー側で指定してください。そうでない場合、Key Vault 側で証明書参照の準備ができていないため、Application Gateway のプロビジョニング状態が失敗になる可能性があります。
 - Application Gateway のリスナーを削除した際に、適応済みに証明書はそのまま残りますので、不要な証明書は削除することをお勧めします。削除方法は以下の通りです。
 Azure ポータルより対象の Application Gateway を開き、[リソース] → [リスナー TLS 証明書] 一覧から、対象の証明書を削除します。
-- Applocation Gateway に複数のリスナーがある場合、リスナー毎に異なるマネージド ID を指定せず、Applocation Gateway 単位で同一マネージド ID をご利用ください。
 
-### お願い
-上記の設定内容に不備がない場合、Applocation Gateway の観点でお問い合わせいただければと存じますが、その場合は、以下の三つのコマンドを実行し、実行したコマンドとその結果をお問い合わせ時に添付いただけるとスムーズかと存じます。
-
-```
-Get-AzKeyVault -VaultName <KeyVault 名>
-Get-AzKeyVaultSecret -VaultName <KeyVault 名>
-Get-AzKeyVaultSecret -VaultName <KeyVault 名> -Name
-```
 ---
